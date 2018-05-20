@@ -64,12 +64,10 @@ io.on('connection', (client) => {
 
   client.on('subscribeToRoomChanges', (room) => {
     console.log('client is subscribing to room changes ', room);
-
   });
 
   client.on('subscribeToPlayerInputChanges', (room) => {
     console.log('client is subscribing to player input changes ', room);
-
   });
 
 });
