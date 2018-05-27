@@ -114,7 +114,7 @@ function putRoom(req, res, next) {
             console.log("Added item:", JSON.stringify(data, null, 2));
             try{
                 console.log("Emitting room update...");
-                req.app.io.emit("room-" + roomId,"room updated");
+                res.io.emit("room-" + roomId,"room updated");
                 console.log("Emitted room update...");
             }
             catch (err) {
@@ -134,7 +134,7 @@ function emitRoomUpdate()
 {
     try{
         console.log("Emitting room update...");
-        req.app.io.emit("room","hello");
+        res.io.emit("room","hello");
         console.log("Emitted room update...");
     }
     catch (err) {

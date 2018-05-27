@@ -93,7 +93,7 @@ function putPlayerInput(req, res, next) {
                 console.log("Added item:", JSON.stringify(data, null, 2));
                 try{
                     console.log("Emitting player update...");
-                    req.app.io.emit("player-input-" + roomId,"player updated");
+                    res.io.emit("player-input-" + roomId,"player updated");
                     console.log("Emitted player update...");
                 }
                 catch (err) {
