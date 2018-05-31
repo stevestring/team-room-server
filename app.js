@@ -15,7 +15,7 @@ var roomInputsRouter = require('./routes/room-inputs');
 
 var app = express();
 
-var server = require('http').Server(app);
+var server = require('http').Server(app, { origins: '*:*'});
 var io = require('socket.io')(server);
 
 app.use(function(req, res, next){

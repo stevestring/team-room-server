@@ -9,13 +9,24 @@ AWS.config.update({
     endpoint: db.DynamoConfig.endpoint
 });
 
+// Set no cache headers to ensure browsers (especially IE) don't cache the API requests
+router.use((req, res, next) => {
+    res.setHeader('Expires', '-1');
+    res.setHeader('Cache-Control', 'no-cache');
+    next();
+});
 
 router.get('/:rid/:iid',lookupRoomInput, function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.json(req.roomInput);
 });
 router.put('/:rid/:iid',putRoomInput, function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
     res.json(req.roomInput);
 });
 
