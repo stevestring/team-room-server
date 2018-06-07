@@ -9,14 +9,24 @@ AWS.config.update({
     endpoint: db.DynamoConfig.endpoint
 });
 
+// Set no cache headers to ensure browsers (especially IE) don't cache the API requests
+router.use((req, res, next) => {
+    res.setHeader('Expires', '-1');
+    res.setHeader('Cache-Control', 'no-cache');
+    next();
+});
 
 //One room
 router.get('/:id',lookupRoom, function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.json(req.room);
 });
 
 //All rooms
 router.get('/',lookupRooms, function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.json(req.rooms);
 });
 
@@ -26,8 +36,6 @@ router.put('/:id',putRoom, function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.json(req.room);
 
-    
-    
 });
 
 
@@ -114,7 +122,7 @@ function putRoom(req, res, next) {
             console.log("Added item:", JSON.stringify(data, null, 2));
             try{
                 console.log("Emitting room update...");
-                req.app.io.emit("room-" + roomId,"room updated");
+                res.io.emit("room-" + roomId,"room updated");
                 console.log("Emitted room update...");
             }
             catch (err) {
@@ -134,7 +142,7 @@ function emitRoomUpdate()
 {
     try{
         console.log("Emitting room update...");
-        req.app.io.emit("room","hello");
+        res.io.emit("room","hello");
         console.log("Emitted room update...");
     }
     catch (err) {

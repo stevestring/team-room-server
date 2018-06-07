@@ -16,20 +16,23 @@ router.use((req, res, next) => {
     next();
 });
 
-router.get('/:rid/:pid',lookupPlayerInput, function(req, res, next) {
+router.get('/:rid/:iid',lookupRoomInput, function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.json(req.playerInput);
+    res.json(req.roomInput);
 });
-router.put('/:rid/:pid',putPlayerInput, function(req, res, next) {
+router.put('/:rid/:iid',putRoomInput, function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.json(req.playerInput);
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
+    res.json(req.roomInput);
 });
 
-function lookupPlayerInput(req, res, next) {
+function lookupRoomInput(req, res, next) {
     // We access the ID param on the request object
-    var playerId = parseInt( req.params.pid,10);
+    var roomInputId =  req.params.iid;
     var roomId = parseInt( req.params.rid,10);
 
     var AWS = require("aws-sdk");
@@ -37,10 +40,10 @@ function lookupPlayerInput(req, res, next) {
     var docClient = new AWS.DynamoDB.DocumentClient()
 
     var params = {
-        TableName: "PlayerInput",
+        TableName: "RoomInput",
         Key:{
             "RoomId": roomId,
-            "PlayerId": playerId
+            "RoomInputId": roomInputId
         }
     };
 
@@ -55,34 +58,36 @@ function lookupPlayerInput(req, res, next) {
 
         // By attaching a Photo property to the request
         // Its data is now made available in our handler function
-        req.playerInput = data.Item;
+        req.roomInput = data.Item;
         next();
     });
 
-
 }
 
-function putPlayerInput(req, res, next) {
+function putRoomInput(req, res, next) {
     // We access the ID param on the request object
-    var playerId = parseInt( req.params.pid,10);
+    
     var roomId = parseInt( req.params.rid,10);
+    var roomInputId =  req.params.iid;
+
+    console.log(req.params.rid+":"+req.params.iid);
 
     var AWS = require("aws-sdk");
 
     var docClient = new AWS.DynamoDB.DocumentClient()
 
 
-    var table = "PlayerInput";
+    var table = "RoomInput";
 
-    var card = req.body.Card; //This needs to be flexible to accomadate multiple activities and inputs
+    var input = req.body.Input; //This needs to be flexible to accomodate multiple activities and inputs
     console.log(req.body);
-    console.log(req.body.card);
+    console.log(req.body.Input);
     var params = {
         TableName:table,
         Item:{
             "RoomId": roomId,
-            "PlayerId": playerId,
-            "Card": card,
+            "RoomInputId": roomInputId,
+            "Input": input,
             "Datemodified":Date.now()
         }
 
@@ -100,9 +105,9 @@ function putPlayerInput(req, res, next) {
             } else {
                 console.log("Added item:", JSON.stringify(data, null, 2));
                 try{
-                    console.log("Emitting player update...");
-                    res.io.emit("player-input-" + roomId,"player updated");
-                    console.log("Emitted player update...");
+                    console.log("Emitting room update...");
+                    res.io.emit("room-input-" + roomId,"room updated");
+                    console.log("Emitted room update...");
                 }
                 catch (err) {
                     console.log(err);
@@ -112,7 +117,7 @@ function putPlayerInput(req, res, next) {
 
         }
 
-        req.playerInput = data;
+        req.roomInput = data;
         next();
     });
 

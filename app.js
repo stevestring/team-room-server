@@ -6,15 +6,24 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+
 var playerInputsRouter = require('./routes/player-input');
 var roomPlayerInputsRouter = require('./routes/player-inputs');
 var roomRouter = require('./routes/room');
-
-var socket_io    = require( "socket.io" );
-
+var roomInputRouter = require('./routes/room-input');
+var roomInputsRouter = require('./routes/room-inputs');
 
 var app = express();
 
+// var server = require('http').Server(app, { origins: '*:*'});
+var server = require('http').Server(app);
+var allowedOrigins = "*:*";
+var io = require('socket.io')(server, {origins: allowedOrigins});
+
+app.use(function(req, res, next){
+  res.io = io;
+  next();
+});
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -23,9 +32,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-// Socket.io
-var io           = socket_io();
-app.io           = io;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -40,7 +46,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/player-input', playerInputsRouter);
 app.use('/room', roomRouter);
+app.use('/users', usersRouter);
 app.use('/player-inputs', roomPlayerInputsRouter);
+app.use('/room-input', roomInputRouter);
+app.use('/room-inputs', roomInputsRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -59,24 +69,4 @@ app.use(function(err, req, res, next) {
 });
 
 
-// socket.io events
-io.on('connection', (client) => {
-
-  client.on('subscribeToRoomChanges', (room) => {
-    console.log('client is subscribing to room changes ', room);
-
-  });
-
-  client.on('subscribeToPlayerInputChanges', (room) => {
-    console.log('client is subscribing to player input changes ', room);
-
-  });
-
-});
-
-
-const port = 8000;
-io.listen(port);
-console.log('listening on port ', port);
-
-module.exports = app;
+module.exports = {app: app, server: server};

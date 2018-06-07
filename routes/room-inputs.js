@@ -16,30 +16,30 @@ router.use((req, res, next) => {
     next();
 });
 
-router.get('/:id',lookupRoomPlayerInputs, function(req, res, next) {
+router.get('/:id',lookupRoomInputs, function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.json(req.roomPlayerInputs);
+    res.json(req.roomInputs);
 });
 
-router.delete('/:id',deleteRoomPlayerInputs, function(req, res, next) {
+router.delete('/:id',deleteRoomInputs, function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.json(req.roomPlayerInputs);
+    res.json(req.roomInputs);
 });
 
 
-function getPlayerInputs(roomId, callback) {
+function getRoomInputs(roomId, callback) {
 
     console.log("roomid: "+ roomId);
     var docClient = new AWS.DynamoDB.DocumentClient()
 
     var params = {
-        TableName: "PlayerInput",
+        TableName: "RoomInput",
         KeyConditionExpression: "RoomId = :r",
-        ProjectionExpression: "RoomId,Card,#p",        
+        ProjectionExpression: "RoomId,#i,RoomInputId,Datemodified",        
         ExpressionAttributeNames: {
-            "#p": "PlayerId",
+            "#i": "Input",
         },
         ExpressionAttributeValues: {
             ":r":roomId
@@ -76,40 +76,40 @@ function getPlayerInputs(roomId, callback) {
 }
 
 
-function lookupRoomPlayerInputs(req, res, next) {
+function lookupRoomInputs(req, res, next) {
     var roomId = parseInt( req.params.id,10);
     
-    getPlayerInputs(roomId,function(data){        
-        var roomPlayerInputs =data; 
-        console.log(roomPlayerInputs);        
-        req.roomPlayerInputs = roomPlayerInputs;
+    getRoomInputs(roomId,function(data){        
+        var roomInputs =data; 
+        console.log(roomInputs);        
+        req.roomInputs = roomInputs;
         next();
     })
 
 }
 
 
-function deleteRoomPlayerInputs(req, res, next) {
+function deleteRoomInputs(req, res, next) {
     var roomId = parseInt( req.params.id,10);
 
-    getPlayerInputs(roomId,function(data){        
-    var currentRoomPlayerInputs =data.Items; 
+    getRoomInputs(roomId,function(data){        
+    var currentRoomInputs =data.Items; 
     var documentclient = new AWS.DynamoDB.DocumentClient();
 
     var itemsArray = [];
 
-    console.log("currentRoomPlayerInputs:" + JSON.stringify(currentRoomPlayerInputs));
+    //console.log("currentRoomPlayerInputs:" + JSON.stringify(currentRoomInputs));
 
-    currentRoomPlayerInputs.forEach(function(item) {
-        console.log(item);        
-        console.log("room:" +item.RoomId + " Player:" + item.PlayerId);
+    currentRoomInputs.forEach(function(item) {
+        //console.log(item);        
+        console.log("room:" +item.RoomId + " InputId:" + item.RoomInputId);
     
         itemsArray.push(
             {
                 DeleteRequest : {
                     Key : {
                         'RoomId' : parseInt( item.RoomId,10),
-                        'PlayerId' : parseInt( item.PlayerId,10)
+                        'RoomInputId' : item.RoomInputId
                     }
                 }
             });
@@ -125,14 +125,14 @@ function deleteRoomPlayerInputs(req, res, next) {
 
         var params = {
             RequestItems : {
-                'PlayerInput' : itemsArray
+                'RoomInput' : itemsArray
             }
         };
         documentclient.batchWrite(params, function(err, data) {
             if (err) {
                 console.log('Batch delete unsuccessful ...');
                 console.log(err, err.stack); // an error occurred
-                req.roomPlayerInputs = data;
+                req.roomInputs = data;
                 next();
             } else {
                 console.log('Batch delete successful ...');
@@ -141,7 +141,7 @@ function deleteRoomPlayerInputs(req, res, next) {
             }
         });
     }
-    req.roomPlayerInputs = null;
+    req.roomInputs = null;
     next();
     
     });
