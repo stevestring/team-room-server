@@ -15,8 +15,10 @@ var roomInputsRouter = require('./routes/room-inputs');
 
 var app = express();
 
-var server = require('http').Server(app, { origins: '*:*'});
-var io = require('socket.io')(server);
+// var server = require('http').Server(app, { origins: '*:*'});
+var server = require('http').Server(app);
+var allowedOrigins = "*:*";
+var io = require('socket.io')(server, {origins: allowedOrigins});
 
 app.use(function(req, res, next){
   res.io = io;
