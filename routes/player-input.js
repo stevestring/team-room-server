@@ -21,6 +21,7 @@ router.get('/:rid/:pid',lookupPlayerInput, function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.json(req.playerInput);
 });
+
 router.put('/:rid/:pid',putPlayerInput, function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -75,6 +76,8 @@ function putPlayerInput(req, res, next) {
     var table = "PlayerInput";
 
     var card = req.body.Card; //This needs to be flexible to accomadate multiple activities and inputs
+    var playerInput = req.body.PlayerInput;
+
     console.log(req.body);
     console.log(req.body.card);
     var params = {
@@ -83,6 +86,7 @@ function putPlayerInput(req, res, next) {
             "RoomId": roomId,
             "PlayerId": playerId,
             "Card": card,
+            "PlayerInput": playerInput,
             "Datemodified":Date.now()
         }
 
