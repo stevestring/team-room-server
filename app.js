@@ -20,6 +20,11 @@ var server = require('http').Server(app);
 var allowedOrigins = "*:*";
 var io = require('socket.io')(server, {origins: allowedOrigins});
 
+// ADD THIS
+var cors = require('cors');
+app.use(cors());
+
+
 app.use(function(req, res, next){
   res.io = io;
   next();

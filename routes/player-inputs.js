@@ -37,7 +37,7 @@ function getPlayerInputs(roomId, callback) {
     var params = {
         TableName: "PlayerInput",
         KeyConditionExpression: "RoomId = :r",
-        ProjectionExpression: "RoomId,Card,#p",        
+        ProjectionExpression: "RoomId,Card, PlayerInput, #p",        
         ExpressionAttributeNames: {
             "#p": "PlayerId",
         },
