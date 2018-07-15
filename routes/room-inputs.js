@@ -113,8 +113,35 @@ function deleteRoomInputs(req, res, next) {
                     }
                 }
             });
+
+        
+        //If there are 25 items we need to send in seperate batches
+        if(itemsArray.length == 25) { // when you have 25 ready..
+            console.log("delete 25 items:" + itemsArray);
+
+            var params = {
+                RequestItems : {
+                    'RoomInput' : itemsArray
+                }
+            };
+            documentclient.batchWrite(params, function(err, data) {
+                if (err) {
+                    console.log('Batch 25 delete unsuccessful ...');
+                    console.log(err, err.stack); // an error occurred
+                    req.roomInputs = data;
+                    next();
+                } else {
+                    console.log('Batch 25 delete successful ...');
+                    console.log(data); // successful response           
+                    console.log("next");
+                }
+            });
+            itemsArray=[];
+        }
+
     });
     
+    //Remainder...Not a full batch
     if (itemsArray.length===0)
     {
         console.log("Nothing to delete");

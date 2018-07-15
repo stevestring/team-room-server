@@ -104,6 +104,7 @@ function deleteRoomPlayerInputs(req, res, next) {
         console.log(item);        
         console.log("room:" +item.RoomId + " Player:" + item.PlayerId);
     
+
         itemsArray.push(
             {
                 DeleteRequest : {
@@ -113,6 +114,34 @@ function deleteRoomPlayerInputs(req, res, next) {
                     }
                 }
             });
+        
+            //If there are 25 items we need to send in seperate batches
+            if(itemsArray.length == 25) { // when you have 25 ready..
+                console.log("delete items:" + itemsArray);
+
+                var params = {
+                    RequestItems : {
+                        'PlayerInput' : itemsArray
+                    }
+                };
+
+                documentclient.batchWrite(params, function(err, data) {
+                    if (err) {
+                        console.log('Batch of 25 delete unsuccessful ...');
+                        console.log(err, err.stack); // an error occurred
+                        req.roomPlayerInputs = data;
+                        next();
+                    } else {
+                        console.log('Batch of 25 delete successful ...');
+                        console.log(data); // successful response           
+                        console.log("next");
+                    }
+                });
+
+                itemsArray = []; // clean up the array of put item requests
+                // handle the failed items from the result object
+             }
+            
     });
     
     if (itemsArray.length===0)
