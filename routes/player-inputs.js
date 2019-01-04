@@ -17,14 +17,10 @@ router.use((req, res, next) => {
 });
 
 router.get('/:id',lookupRoomPlayerInputs, function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.json(req.roomPlayerInputs);
 });
 
 router.delete('/:id',deleteRoomPlayerInputs, function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.json(req.roomPlayerInputs);
 });
 

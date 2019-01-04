@@ -17,14 +17,10 @@ router.use((req, res, next) => {
 });
 
 router.get('/:rid/:pid',lookupPlayerInput, function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.json(req.playerInput);
 });
 
 router.put('/:rid/:pid',putPlayerInput, function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.json(req.playerInput);
 });
 

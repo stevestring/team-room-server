@@ -17,14 +17,10 @@ router.use((req, res, next) => {
 });
 
 router.get('/:id',lookupRoomInputs, function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.json(req.roomInputs);
 });
 
 router.delete('/:id',deleteRoomInputs, function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.json(req.roomInputs);
 });
 
