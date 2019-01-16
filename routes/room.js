@@ -88,6 +88,7 @@ function putRoom(req, res, next) {
     var activitystate = req.body.activitystate; 
     var message = req.body.message; 
     var messageid = req.body.messageid; 
+    var password = req.body.password;
 
 
     console.log(req.body);
@@ -101,6 +102,7 @@ function putRoom(req, res, next) {
             "ActivityState":activitystate,
             "MessageId":messageid,
             "Message":message,
+            "Password":password,
             "ttl":addDays(Date.now(),1),
             "Datemodified":Date.now()
         }
